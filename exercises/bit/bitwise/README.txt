@@ -1,0 +1,16 @@
+FUNCTION PRESENTI:
+	-	conversione di un carattere da maiuscolo a minuscolo e viceversa
+	-	rotazione di una variabile di n_bit con operatori bitwise
+	- 	swap di due variabili senza variabile di appoggio
+	-	estrazione dei bit pari da una variabile
+	-	inversione dei bit di una variabile
+	-	conversione di un numero int da base 10 in binario
+	-	conversione di un numero decimale (con virgola) da base 10 in binario
+	-	inversione ordine di bit di un carattere
+	-	somma binaria con riporto
+	-	sottrazione binaria con prestito
+	-	rappresentazione complemento a 2
+	-	rappresentazione biased
+	-	estrazione esponente da un numero rappresentato con standard IEEE-754
+	-	visualizzazione di mantissa, esponente e segno di un numero rappresentato con standard IEEE-754
+	-	visualizzazione di mantissa, esponente e segno di un numero rappresentato con standard IEEE-754	mediante array
