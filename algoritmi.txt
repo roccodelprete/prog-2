@@ -1,0 +1,839 @@
+/* ********************************* BITWISE ********************************* */
+/* Estrazione dei 5 bit più significativi */
+void five_msb_extraction(unsigned char *number, short *mask) {
+	*mask = 31 << 3;
+	*number &= *mask;
+}
+/* -------------------------------------- */
+
+/* Estrazione dei bit meno significativi */
+void lsb_extraction(unsigned char *number, short n_bit, short *mask) {
+	for (int i = 0; i < n_bit; i++)
+		*mask <<= 1|1;
+	*number &= *mask;
+}
+/* ------------------------------------- */
+
+/* Conversione da maiuscolo a minuscolo e viceversa */
+unsigned char conversion(unsigned char c) {
+	if (c >= 65 && c <= 122)
+		return c ^ 32;
+	else
+		return c;
+}
+/* ------------------------------------------------ */
+
+/* Estrazione bit pari */
+void even_extraction(unsigned char *number) {
+	unsigned char a = *number & 1, b = *number & 4, c = *number & 16, d = *number & 64;
+	b >>= 1;
+	c >>= 2;
+	d >>= 3;
+	*number = 0;
+	*number |= d;
+	*number |= c;
+	*number |= b;
+	*number |= a; 
+}
+/* ------------------- */
+
+/* Swap senza variabile di appoggio */
+void swap(unsigned char *var_1, unsigned char *var_2) {
+	*var_1 ^= *var_2;
+	*var_2 ^= *var_1;
+	*var_1 ^= *var_2;
+}
+/* -------------------------------- */
+
+/* Inversione bit */
+unsigned char inversion(unsigned char number) {
+	unsigned char tmp = 0, inverted;
+	short k = 1, mask;
+	for (int i = 0; i < 7; i++) {
+		if (i < 4) {
+			mask = pow(2, i);
+			tmp = number & mask;
+			tmp <<= 7-i*2;
+			inverted |= tmp;
+			tmp = 0;
+		} else {
+			mask = pow(2, i);
+			tmp = number & mask;
+			tmp >>= k;
+			inverted |= tmp;
+			k += 2;
+			tmp = 0;
+		}
+	}
+	return inverted;
+}
+/* -------------- */
+
+/* Rotazione bit */
+unsigned char rotate(unsigned char number, short n_bit) {
+	unsigned char tmp = number, rotated;
+	if (n_bit > 0) {
+		number >>= n_bit;
+		tmp <<= (sizeof(number) * 8 - n_bit);
+		rotated = number | tmp;
+	} else if (n_bit < 0) {
+		n_bit = -n_bit;
+		number <<= n_bit;
+		tmp >>= (sizeof(number) * 8 - n_bit);
+		rotated = number | tmp;
+	}
+	return rotated;
+}
+/* ------------- */
+
+/* Conversione da base 10 a base 2 numero int */
+void int_conversion(unsigned char *bit, short number) {
+	short i = 0;
+	do {
+		*(bit+i++) = number % 2;
+		number /= 2;
+	} while (number > 0)
+	for (int j = i; j < 8; i++)
+		*(bit+j) = 0;
+}
+/* ------------------------------------------ */
+
+/* Conversione da base 10 a base 2 parte float */
+void float_conversion(float number, unsigned char *bit, short num_mul) {
+	for (int i = 0; i < num_mul; i++) {
+		number *= 2;
+		*(bit+i) = (char)number;
+		number -= *(bit+i);
+	}
+	for (int i = num_mul; i < 23; i++)
+		*(bit+i) = 0;
+}
+/* ------------------------------------------- */
+
+/* Somma binaria */
+short binary_sum(short addend_1, short addend_2) {
+	short carry, sum;
+	do {
+		sum = addend_1 ^ addend_2;
+		carry = addend_1 & addend_2;
+		carry <<= 1;
+		addend_1 = sum;
+		addend_2 = carry;
+	} while (addend_2 > 0);
+	return sum;
+}
+/* ------------- */
+
+/* Sottrazione binaria */
+short binary_sub(short var_1, short var_2) {
+	short sub, loan;
+	do {
+		sub = var_1 ^ var_2;
+		loan = ~var_1 & var_2;
+		loan <<= 1;
+		addend_1 = sub;
+		addend_2 = loan; 
+	} while (addend_2 > 0);
+	return sub;
+}
+/* ------------------- */
+
+/* Complemento a due */
+short complemento_a_due(short number, short n_bit) {
+	if (number >= 0)
+		return number;
+	else
+		return pow(2, n_bit) + number;
+}
+/* ----------------- */
+
+/* Rappresentazione biased */
+short biased(short number, short n_bit) {
+	return pow(2, n_bit - 1) - 1 + number;
+}
+/* ----------------------- */
+
+/* Estrazione esponente */
+short esponent_extraction(short number) {
+	int esponent, mask = 0x7f800000;
+	esponent = number & mask;
+	esponent >>= 23;
+	esponent -= 127;
+	return (short)esponent;
+}
+/* -------------------- */
+/* *************************************************************************** */
+
+/* ********************************* STRINGHE ********************************* */
+/* Concatenazione senza strcat() */
+char *concatenation(char *str1, char *str2) {
+	int j = strlen(str1);
+	str1 = (char*)realloc(str1, strlen(str1) + strlen(str2));
+	for (int i = 0; *(str2 + i) != '\0'; i++)
+		*(str1 + j++) = *(str2 + i);
+	*(str1 + j) = '\0';
+	return str1;
+}
+/* ----------------------------- */
+
+/* Allocazione dinamica di una stringa */
+char *input_string(unsigned int string_size) {
+	char *s = (char*)malloc((string_size + 1) * sizeof(char));
+	fgets(s, string_size, stdin);
+	fflush(stdin);
+	*(s+strlen(s)-1) = '\0'
+	s = realloc(s, strlen(s) + 1);
+	return s;
+}
+/* ----------------------------------- */
+/* **************************************************************************** */
+
+/* ********************************* STACK ********************************* */
+/* push e pop con array statico */
+void push(int *stack, int element, int *head) {
+	*(stack + ++*head) = element;
+}
+
+void pop(int *stack, int *element, int *head) {
+	*element = *(stack + (*head)--);
+}
+/* ---------------------------- */
+
+/* push e pop con liste */
+typedef struct PERSONA {
+	INFO_FIELD info;
+	struct PERSONA *next;
+} Persona;
+
+Persona *crea_lista() {
+	Persona *head = NULL;
+	return *head;
+}
+
+Persona *push(INFO_FIELD new_dato, Persona *head) {
+	Persona *nodo = (Persona*)calloc(1, sizeof(Persona));
+	nodo->info = new_dato;
+	nodo->next = head;
+	head = nodo;
+	return head;
+}
+
+Persona *pop(Persona *head) {
+	Persona *nodo = head->next;
+	free(head);
+	head = nodo;
+	return head;
+}
+/* -------------------- */
+/* ************************************************************************* */
+
+/* ********************************* QUEUE ********************************* */
+/* Queue con array statico */
+#define QUEUE_SIZE 10
+
+void enqueue(int *queue, short *bottom, int element) {
+	if (*bottom < QUEUE_SIZE)
+		*(queue+(*bottom)++) = element;
+}
+
+void dequeue(short *head, short bottom) {
+	if (*head < QUEUE_SIZE && *head != bottom)
+		(*head)++;
+}
+/* ----------------------- */
+
+/* Queue circolare */
+#define QUEUE_SIZE 10
+
+void enqueue(int *queue, short *num_element, short head, int element) {
+	short bottom = head + *num_element;
+	bottom %= QUEUE_SIZE;
+	*(queue+bottom) = element;
+	(*num_element)++;
+}
+
+void dequeue(short *head, short *num_element) {
+	(*head)--;
+	*head %= QUEUE_SIZE;
+	(*num_element)--;
+}
+/* --------------- */
+
+/* Queue con lista */
+typedef struct PERSONA {
+	INFO_FIELD info;
+	struct PERSONA *next;
+} Persona;
+
+Persona *visit_list(Persona *head) {
+	Persona *prec = NULL, curr = *head;
+	while (curr != NULL) {
+		prec = curr;
+		curr = curr->next;
+	}
+	return prec;
+}
+
+void enqueue(INFO_FIELD new_dato, Persona *head) {
+	Persona *nodo = (Persona*)calloc(1, sizeof(Persona));
+	Persona *ptr = visit_list(head);
+	nodo->info = new_dato;
+	nodo->next = NULL;
+	ptr->next = nodo;
+	ptr = nodo;
+}
+
+Persona *dequeue(Persona *head) {
+	Persona *nodo = head->next;
+	free(head);
+	head = nodo;
+	return head;
+}
+/* --------------- */
+/* ************************************************************************* */
+
+/* ********************************* LISTA ********************************* */
+/* Lista con allocazione dinamica */
+struct PERSONA {
+	INFO_FIELD info;
+	struct PERSONA *next;
+};
+
+PERSONA *visit_list(struct PERSONA *head) {
+	struct PERSONA *prec = NULL, curr = *head;
+	while (curr != NULL && strcmp(curr->info.nome, prec->info.nome) < 0) {
+		prec = curr;
+		curr = curr->next;
+	}
+	return prec;
+}
+
+PERSONA *crea_lista() {
+	struct PERSONA *head = NULL;
+	return head;
+}
+
+void insert_node_head(INFO_FIELD new_dato, struct PERSONA **head) {
+	struct PERSONA *nodo = (struct PERSONA*)calloc(1, sizeof(struct PERSONA));
+	nodo->info = new_dato;
+	nodo->next = head;
+	head = nodo;
+}
+
+void insert_node_between(INFO_FIELD new_dato, struct PERSONA **curr) {
+	/* viene visitata la lista al di fuori di questa function */
+	struct PERSONA *nodo = (struct PERSONA*)calloc(1, sizeof(struct PERSONA));
+	nodo->info = new_dato;
+	nodo->next = (*curr)->next;
+	(*curr)->next = nodo;
+	*curr = nodo;
+}
+
+void delete_head(struct PERSONA **head) {
+	struct PERSONA *nodo = (*head)->next;
+	free(*head);
+	*head = nodo;
+}
+
+void delete_between(INFO_FIELD dato, struct PERSONA **head) {
+	struct PERSONA *prec = NULL, *curr = *head;
+	while (curr != NULL && (strcmp(curr->info.nome, dato.nome) != 0) && (curr->info.eta != dato.eta)) {
+		prec = curr;
+		curr = curr->next;
+	}
+	if (strcmp(curr->info.nome, dato.nome) == 0 && curr->info.eta == dato.eta) {
+		prec->next = curr->next;
+		free(curr);
+	}
+} 
+/* ------------------------------ */
+
+/* Lista ricorsiva */
+struct linked_list {
+	char dato;
+	struct linked_list *next;
+} ELEMENT;
+typedef ELEMENT *link;
+
+link crea_lista(char *dato) {
+	link head;
+	if (dato[0] == '\0')
+		return;
+	else {
+		head = malloc(sizeof(ELEMENT));
+		head->dato = s[0];
+		head->next = crea_lista(s + 1);
+		return head;
+	}
+}
+/* --------------- */
+/* ************************************************************************* */
+
+/* ********************************* ALBERI ********************************* */
+/* Costruzione binary search tree (BST) ricorsiva */
+typedef struct nodo {
+	char dato;
+	struct nodo *sx, *dx;
+} NODO;
+
+typedef enum {false,true} boolean;
+
+void create_bst(int size_array, char *array, NODO *root, NODO *ptr) {
+	NODO *new;
+	if (size_array <= 0)
+		return;
+	else if (*array > ptr->dato) {
+		if (ptr->dx != NULL)
+			create_bst(size_array, array, root, ptr->dx);
+		else {
+			new = malloc(sizeof(NODO));
+			new->dato = *array;
+			new->dx = new->sx = NULL;
+			ptr->dx = new;
+			create_bst(size_array - 1, array + 1, root, root);
+		}
+	} else {
+		if (ptr->sx != NULL)
+			create_bst(size_array, array, root, ptr->sx);
+		else {
+			new = malloc(sizeof(NODO));
+			new->dato = *array;
+			new->dx = new->sx = NULL;
+			ptr->sx = new;
+			create_bst(size_array - 1, array + 1, root, root);
+		}
+	}
+}
+
+boolean binary_search(char key, NODO *root) {
+	NODO *curr = root;
+	if (curr == NULL)
+		return false;
+	else if (curr->dato == key)
+		return true;
+	else if (curr->dato < key)
+		binary_search(key, curr->sx);
+	else
+		binary_search(key, curr->dx);
+}
+
+void inorder_visit(NODO *curr, short index) {
+	if(curr != NULL) {
+		inorder_visit(curr->sx, index);
+		printf("Visita %d - Dato -> %c\n", index++, curr->dato);
+		inorder_visit(curr->dx, index);
+	}
+}
+
+void preorder_visit(NODO *curr, short index) {
+	if (curr != NULL) {
+		printf("Visita %d - Dato -> %c\n", index++, curr->dato);
+		preorder_visit(curr->sx, index);
+		preorder_visit(curr->dx, index);
+	}
+}
+
+void postorder_visit(NODO *curr, short index) {
+	if (curr != NULL) {
+		postorder_visit(curr->sx, index);
+		postorder_visit(curr->dx, index);
+		printf("Visita %d - Dato -> %c\n", index++, curr->dato);
+	}
+}
+/* ---------------------------------------------- */
+
+/* Costruzione binary search tree (BST) iterativo */
+typedef struct nodo {
+	char dato;
+	struct nodo *sx,*dx;
+} NODO;
+
+typedef enum {false,true} boolean;
+
+void create_bst(NODO **root) {
+	short continua = 1;
+	NODO *curr, new;
+	*root = malloc(sizeof(NODO));
+	printf("Inserire radice -> ");
+	(*root)->dato = getchar();
+	(*root)->dx = (*root)->sx = NULL;
+	while (continua == 1) {
+		curr = *root;
+		new = malloc(sizeof(NODO));
+		printf("Inserire dato -> ");
+		new->dato = getchar();
+		while (new->dato <= curr->dato && curr->sx != NULL)
+			curr = curr->sx;
+		while (new->dato >= curr->dato  && curr->dx != NULL)
+			curr = curr->dx;
+		if (new->dato <= curr->dato) {
+			curr->sx = new;
+			new->sx = new->dx = NULL;
+		} else {
+			curr->dx = new;
+			new->dx = new->sx = NULL;
+		}
+		printf("Continui ad inserire? 1[SI] - 2[NO] -> ")
+		scanf("%hi", &continua);
+		fflush(stdin);
+	}
+}
+
+boolean binary_search(char key, NODO *root) {
+	NODO *curr = root;
+	if (curr == NULL)
+		return false;
+	else if (curr->dato == key)
+		return true;
+	else if (curr->dato < key)
+		binary_search(key, curr->sx);
+	else
+		binary_search(key, curr->dx);
+}
+/* ---------------------------------------------- */
+
+/* Heap */
+void swap(int *x, int *y) {
+	int temp = *x;
+	*x = *y;
+	*y = temp;
+}
+
+void build_heap(int *array, int size_array) {
+	for (int i = 1; i <= size_array; i++) {
+		if (i != 1)
+			heapify(array, i);
+		else if (i > 4)
+			heapify(array, i/2);
+	}
+}
+
+void heapify(int *heap, int i) {
+	if (i%2 == 0) {
+		if (*(heap+i) > *(heap+i+1) && *(heap+i) > *(heap+i/2))
+			swap(heap+i, heap+i/2);
+	} else {
+		if (*(heap+i) > *(heap+i-1) && *(heap+i) > *(heap+i/2))
+			swap(heap+i, heap+i/2);
+	}
+}
+/* ---- */
+/* ************************************************************************** */
+
+/* ********************************* GRAFO ********************************* */
+/* Non orientato con matrice delle adiacenze */
+void crea_grafo(int *matrice, int size_grafo) {
+	int num_adiacenze = 0, int nodo_adiacente, i, j;
+	for (i = 0; i < size_grafo; i++) {
+		printf("Inserire adiacenze nodo %d -> ", i);
+		scanf("%d", &num_adiacenze);
+		fflush(stdin);
+		for (j = 0; j < num_adiacenze; j++) {
+			printf("Inserire con quale nodo è adiacente -> ");
+			scanf("%d", &nodo_adiacente);
+			fflush(stdin);
+			*(mat+size_grafo*i+nodo_adiacente) = 1;
+		}
+	}
+}
+/* ----------------------------------------- */
+
+/* Orientato indicando nodi raggiungibili */
+void crea_grafo(int *matrice, int size_grafo) {
+	int num_adiacenze = 0, int nodo_adiacente, i, j;
+	for (i = 0; i < size_grafo; i++) {
+		printf("Inserire adiacenze nodo %d -> ", i);
+		scanf("%d", &num_adiacenze);
+		fflush(stdin);
+		for (j = 0; j < num_adiacenze; j++) {
+			printf("Inserire con quale nodo è adiacente -> ");
+			scanf("%d", &nodo_adiacente);
+			fflush(stdin);
+			*(mat+size_grafo*i+nodo_adiacente) = 1;
+		}
+	}
+}
+
+int calcola_archi_entranti(int *mat, int size_grafo, int nodo) {
+	int entranti = 0;
+	for (int i = 0; i < size_grafo; i++) {
+		if (*(mat+size_grafo*i+nodo) == 1)
+			entranti++;
+	}
+	return entranti;
+}
+
+int calcola_archi_uscenti(int *mat, int size_grafo, int nodo) {
+	int uscenti = 0;
+	for (int i = 0; i < size_grafo; i++) {
+		if (*(mat+size_grafo*nodo+i) == 1)
+			uscenti++;
+	}
+	return uscenti;
+}
+/* -------------------------------------- */
+
+/* Visita Depth First Search (DFS) */
+struct node {
+	int vertex;
+	struct node* next;
+};
+
+typedef enum {false, true} boolean;
+
+struct Graph {
+	int num_vertices;
+	boolean *visited;
+	struct node** vicinity_list;
+};
+
+void visita_dfs(struct Graph *grafo, int vertex) {
+	struct node *tmp = grafo->vicinity_list[vertex];
+	grafo->visited[vertex] = true;
+	while (tmp != NULL) {
+		int connected_vertex = tmp->vertex;
+		if (grafo->visited[connected_vertex] == false)
+			visita_dfs(grafo, connected_vertex);
+		tmp = tmp->next;
+	}
+}
+
+struct Graph *crea_grafo(int vertices) {
+	struct Graph *grafo = malloc(vertices * sizeof(struct Graph));
+	grafo->num_vertices = vertices;
+	grafo->vicinity_list = malloc(vertices * sizeof(struct node));
+	grafo->visited = malloc(vertices * sizeof(boolean));
+	for (int i = 0; i < vertices; i++) {
+		grafo->vicinity_list[i] = NULL;
+		grafo->visited[i] = false;
+	}
+	return grafo;
+}
+
+struct node *crea_nodo(int v) {
+	struct node *new_nodo = malloc(sizeof(struct node));
+	new_nodo->vertex = v;
+	new_nodo->next = NULL;
+	return new_nodo;
+}
+
+void add_edge(struct Graph *grafo, int x, int y) {
+	struct node *new_nodo = crea_nodo(x);
+	new_nodo->next = grafo->vicinity_list[y];
+	grafo->vicinity_list[y] = new_nodo;
+	new_nodo = crea_nodo(y);
+	new_nodo->next = grafo->vicinity_list[x];
+	grafo->vicinity_list[x] = new_nodo;
+}
+/* ------------------------------- */
+
+/* Visita Breadth First Search (BFS) */
+typedef enum{false,true} boolean;
+
+struct queue {
+	int items[SIZE];
+	int head;
+	int bottom;
+};
+
+struct node {
+	int vertex;
+	struct node *next;
+};
+
+struct Graph {
+	int num_vertices;
+	boolean *visited;
+	struct node** adj_list;
+};
+
+struct queue *crea_coda() {
+	struct queue *q = malloc(sizeof(struct queue));
+	q->head = q->bottom = -1;
+	return q;
+}
+
+void enqueue(struct queue *q, int value) {
+	if (q->head == -1)
+		q->head = 0;
+	q->bottom++;
+	q->items[q->bottom] = value;
+
+}
+
+boolean is_empty(struct queue* q) {
+	if (q->bottom == -1)
+		return true;
+	else
+		return false;
+}
+
+int dequeue(struct queue *q) {
+	int item;
+	if (is_empty(q))
+		item = -1;
+	else {
+		item = q->items[q->head];
+		q->head++;
+		if (q->head > q->bottom)
+			q->head = q->bottom = -1;
+	}
+	return item;
+}
+
+void visita_bfs(struct Graph grafo, int start_vertex) {
+	struct queue *q = crea_coda();
+	grafo->visited[start_vertex] = true;
+	enqueue(q, start_vertex);
+	while (!is_empty(q)) {
+		int current_vertex = dequeue(q);
+		struct node *tmp = grafo->adj_list[current_vertex];
+		while (tmp != NULL) {
+			int adj_vertex = tmp->vertex;
+			if (grafo->visited[adj_vertex] == false) {
+				grafo->visited[adj_vertex] == true;
+				enqueue(q, adj_vertex);
+			}
+			tmp = tmp->next;
+		}
+	}	
+}
+/* --------------------------------- */
+/* ************************************************************************* */
+
+/* ********************************* ALGORITMI RICORSIVI ********************************* */
+/* Potenza x^n lineare */
+int potenza_lineare(int numero, int esponente) {
+	if (esponente == 1)
+		return numero;
+	else if (esponente == 0)
+		return 1;
+	else
+		return numero * potenza_lineare(numero, esponente - 1);
+}
+/* ------------------- */
+
+/* Potenza x^n binaria */
+int potenza_binaria(int numero, int esponente) {
+	if (esponente == 0)
+		return 1;
+	else if (esponente == 1)
+		return numero;
+	else
+		return potenza_binaria(numero, esponente/2) * potenza_binaria(numero, esponente - esponente/2);
+}
+/* ------------------- */
+
+/* Algoritmo di Horner ricorsivo */
+int horner_ricorsivo(int *array, int grado_polinomio, int incognita) {
+	if (grado_polinomio == 1)
+		return *array;
+	else
+		return *(array+grado_polinomio-1) + incognita * horner_ricorsivo(array, grado_polinomio - 1, incognita);
+}
+/* ----------------------------- */
+
+/* Algoritmo di Horner iterativo */
+int horner_iterativo(int *array, int grado_polinomio, int incognita) {
+	int result = *array;
+	for (int i = 1; i < grado_polinomio; i++)
+		result = *(array+i) + incognita * result;
+	return result;
+}
+/* ----------------------------- */
+/* *************************************************************************************** */
+
+/* ********************************* ALGORITMI DI ORDINAMENTO ********************************* */
+/* Merge sort */
+void merge_sort(int *array, int begin, int end) {
+	int mid;
+	if (end + 1 <= 1)
+		return;
+	else if (begin < end) {
+		mid = (begin + end) / 2;
+		merge_sort(array, begin, mid);
+		merge_sort(array, mid + 1, end);
+		merge(array, begin, mid, end);
+	}
+}
+
+void merge(int *array, int begin, int mid, int end) {
+	int i, j, k;
+	int size_left_subarray = mid - begin + 1, size_right_subarray = end - mid;
+	int *left_subarray = calloc(size_left_subarray, sizeof(int));
+	int *right_subarray = calloc(size_right_subarray, sizeof(int));
+	for (i = 0; i < size_left_subarray; i++)
+		*(left_subarray+i) = *(array+begin+i);
+	for (j = 0; size_right_subarray; j++)
+		*(right_subarray+j) = *(array+mid+1+j);
+	i = 0;
+	j = 0;
+	k = begin;
+	while (i < size_left_subarray && j < size_right_subarray) {
+		if (*(left_subarray+i) < *(right_subarray+j)) {
+			*(array+k) = *(left_subarray+i);
+			i++;
+		} else {
+			*(array+k) = *(right_subarray+j);
+			j++;
+		}
+		k++;
+	}
+	while (i < size_left_subarray) {
+		*(array+k) = *(left_subarray+i);
+		i++;
+		k++;
+	}
+	while (j < size_right_subarray) {
+		*(array+k) = *(right_subarray+j);
+		j++;
+		k++;
+	}
+}
+/* ---------- */
+
+/* Quick sort */
+void quick_sort(int *array, int begin, int end) {
+	if (begin < end) {
+		int pivot = partition(array, begin, end);
+		quick_sort(array, begin, pivot - 1);
+		quick_sort(array, pivot + 1, end);
+	}
+}
+
+int partition(int *array, int begin, int end) {
+	int pivot = *(array+end), i = begin;
+	for (int j = begin; j < end; j++) {
+		if(*(array+j) <= pivot) {
+			swap(array+j, array+i);
+			i++;
+		}
+	}
+	swap(array+i, array+end);
+	return i;
+}
+/* ---------- */
+
+/* Heap sort */
+void heap_sort(int *heap, int size_heap) {
+	for (int i = size_heap/2-1; i >= 0; i--)
+		heapify(heap, size_heap, i);
+	for(int i = size_heap - 1; i >= 0; i--) {
+		swap(heap, heap+i);
+		heapify(heap, i, 0);
+	}
+}
+
+void heapify(int *heap, int size_heap, int index_current_element) {
+	int largest = index_current_element, left_child = 2 * index_current_element + 1, right_child = 2 * index_current_element + 2;
+	if (left_child < size_heap && heap[left_child] > heap[largest])
+		largest = left_child;
+	if (right_child < size_heap && heap[right_child] > heap[largest])
+		largest = right_child;
+	if (largest != index_current_element) {
+		swap(heap+index_current_element, heap+largest);
+		heapify(heap, size_heap, largest);
+	}
+}
+/* --------- */
+/* ******************************************************************************************** */
